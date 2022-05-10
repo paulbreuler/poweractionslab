@@ -26,7 +26,7 @@ on:
 
 env:
 #edit your values here
-  ENVIRONMENT_URL: https://orgfa57bff6.crm.dynamics.com/
+  ENVIRONMENT_URL: https://org36dcab52.crm.dynamics.com/
   USERNAME: ${{ secrets.username }}
 
 
