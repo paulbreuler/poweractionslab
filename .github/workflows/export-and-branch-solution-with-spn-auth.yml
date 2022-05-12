@@ -19,20 +19,20 @@ on:
         description: 'staging the unpacked solution folder before check-in *do not change*'
         required: true
         default: out/solutions/
-      solution_target_folder:
+      solution_target_folder: 
        description: 'folder name to be created and checked in *do not change*'
        required: true
        default: solutions/
-
 env:
 #edit your values here
-  ENVIRONMENT_URL: https://org36dcab52.crm.dynamics.com/
-  USERNAME: ${{ secrets.username }}
-
+  ENVIRONMENT_URL: https://org36dcab52.crm.dynamics.com/'
+  CLIENT_ID: 'db972f39-0fe5-42f6-a1c6-5f9e1b28be43'
+  TENANT_ID: '1557f771-4c8e-4dbd-8b80-dd00a88e833e'
 
 jobs:
   export-from-dev:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    # or you can say runs-on: ubuntu-latest
     env:
       RUNNER_DEBUG: 1
 
@@ -42,33 +42,34 @@ jobs:
         lfs: true
 
     - name: who-am-i action
-      uses: microsoft/powerplatform-actions/who-am-i@latest
+      uses: microsoft/powerplatform-actions/who-am-i@0.4.0
       with:
         environment-url: ${{env.ENVIRONMENT_URL}}
-        user-name: ${{env.USERNAME}}
-        password-secret: ${{ secrets.password }}
+        app-id: ${{env.CLIENT_ID}}
+        client-secret: ${{ secrets.PowerPlatformSPN }}
+        tenant-id: ${{env.TENANT_ID}}
+
 
     - name: export-solution action
-      uses: microsoft/powerplatform-actions/export-solution@latest
+      uses: microsoft/powerplatform-actions/export-solution@0.4.0
       with:
         environment-url: ${{env.ENVIRONMENT_URL}}
-        user-name: ${{env.USERNAME}}
-        password-secret: ${{ secrets.password }}
+        app-id: ${{env.CLIENT_ID}}
+        client-secret: ${{ secrets.PowerPlatformSPN }}
+        tenant-id: ${{env.TENANT_ID}}
         solution-name: ${{ github.event.inputs.solution_name }}
         solution-output-file: ${{ github.event.inputs.solution_exported_folder}}/${{ github.event.inputs.solution_name }}.zip
 
-
     - name: unpack-solution action
-      uses: microsoft/powerplatform-actions/unpack-solution@latest
+      uses: microsoft/powerplatform-actions/unpack-solution@0.4.0
       with:
         solution-file: ${{ github.event.inputs.solution_exported_folder}}/${{ github.event.inputs.solution_name }}.zip
         solution-folder: ${{ github.event.inputs.solution_folder}}/${{ github.event.inputs.solution_name }}
         solution-type: 'Unmanaged'
         overwrite-files: true
-        map: ''
 
     - name: branch-solution, prepare it for a PullRequest
-      uses: microsoft/powerplatform-actions/branch-solution@latest
+      uses: microsoft/powerplatform-actions/branch-solution@v0
       with:
         solution-folder: ${{ github.event.inputs.solution_folder}}/${{ github.event.inputs.solution_name }}
         solution-target-folder: ${{ github.event.inputs.solution_target_folder}}/${{ github.event.inputs.solution_name }}
